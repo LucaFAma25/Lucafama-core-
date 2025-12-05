@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Lucafama</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .college-header {
+      width: 100%;
+      background: #fff;
+      text-align: center;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .college-header img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    nav {
+      background: #1b1b1b;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    nav .logo {
+      color: #fff;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    nav .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    nav .user-info span {
+      color: #fff;
+      font-size: 14px;
+    }
+
+    nav .logout-btn {
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    nav .logout-btn:hover {
+      background: #c82333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .dashboard-header h1 {
+      font-size: 28px;
+      color: #333;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #1b1b1b;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #333;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-card i {
+      font-size: 40px;
+      color: #1b1b1b;
+      margin-bottom: 10px;
+    }
+
+    .stat-card h3 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .stat-card p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .data-table-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .table-header {
+      background: #1b1b1b;
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .table-header h2 {
+      font-size: 18px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 8px;
+      padding: 0 15px;
+    }
+
+    .search-box input {
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      outline: none;
+      width: 200px;
+    }
+
+    .search-box i {
+      color: #666;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8f9fa;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    td {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btns button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: opacity 0.3s;
+    }
+
+    .edit-btn {
+      background: #ffc107;
+      color: #000;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: #fff;
+    }
+
+    .action-btns button:hover {
+      opacity: 0.8;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 50px;
+      color: #999;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 450px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .modal-header h2 {
+      font-size: 22px;
+      color: #333;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .close-btn:hover {
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #1b1b1b;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #1b1b1b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .submit-btn:hover {
+      background: #333;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #28a745;
+      color: #fff;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 2000;
+    }
+
+    .toast.error {
+      background: #dc3545;
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .search-box input {
+        width: 150px;
+      }
+
+      th, td {
+        padding: 10px;
+        font-size: 12px;
+      }
+
+      .action-btns {
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      nav {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .table-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="college-header">
+    <img src="header_new.jpg" alt="DG Vaishnav College Header">
+  </div>
+
+  <nav>
+    <div class="logo">Lucafama Dashboard</div>
+    <div class="user-info">
+      <span><i class="fas fa-user"></i> <span id="userNameDisplay">Welcome</span></span>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="dashboard-header">
+      <h1><i class="fas fa-users"></i> Student Management</h1>
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="openModal()">
+          <i class="fas fa-plus"></i> Add Student
+        </button>
+        <button class="btn btn-success" onclick="exportToExcel()">
+          <i class="fas fa-file-excel"></i> Export to Excel
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-cards">
+      <div class="stat-card">
+        <i class="fas fa-user-graduate"></i>
+        <h3 id="totalStudents">0</h3>
+        <p>Total Students</p>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-calendar-day"></i>
+        <h3 id="todayCount">0</h3>
+        <p>Added Today</p>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-clock"></i>
+        <h3 id="currentTime">--:--</h3>
+        <p>Current Time</p>
+      </div>
+    </div>
+
+    <div class="data-table-container">
+      <div class="table-header">
+        <h2><i class="fas fa-list"></i> Student Records</h2>
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search students..." oninput="filterStudents()">
+        </div>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Student Name</th>
+            <th>Roll Number</th>
+            <th>Class & Section</th>
+            <th>Added By</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="studentTableBody">
+          <tr class="no-data">
+            <td colspan="7">No students added yet</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add/Edit Student Modal -->
+  <div class="modal" id="studentModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle"><i class="fas fa-user-plus"></i> Add Student</h2>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="studentForm">
+        <input type="hidden" id="editId">
+        <div class="form-group">
+          <label for="studentName">Student Name *</label>
+          <input type="text" id="studentName" placeholder="Enter student name" required>
+        </div>
+        <div class="form-group">
+          <label for="rollNumber">Roll Number *</label>
+          <input type="text" id="rollNumber" placeholder="Enter roll number" required>
+        </div>
+        <div class="form-group">
+          <label for="classSection">Class & Section *</label>
+          <input type="text" id="classSection" placeholder="e.g., 12-A, BCA 2nd Year" required>
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-save"></i> Save Student
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Check authentication
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    // Display user name
+    document.getElementById('userNameDisplay').textContent = localStorage.getItem('userName') || 'Member';
+
+    // Initialize students from localStorage
+    let students = JSON.parse(localStorage.getItem('students')) || [];
+
+    // Update time
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit'
+      });
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Render students table
+    function renderStudents(filteredStudents = null) {
+      const tbody = document.getElementById('studentTableBody');
+      const displayStudents = filteredStudents || students;
+      
+      if (displayStudents.length === 0) {
+        tbody.innerHTML = '<tr class="no-data"><td colspan="7">No students added yet</td></tr>';
+      } else {
+        tbody.innerHTML = displayStudents.map((student, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${student.studentName}</td>
+            <td>${student.rollNumber}</td>
+            <td>${student.classSection}</td>
+            <td>${student.addedBy}</td>
+            <td>${student.date}</td>
+            <td class="action-btns">
+              <button class="edit-btn" onclick="editStudent(${student.id})"><i class="fas fa-edit"></i> Edit</button>
+              <button class="delete-btn" onclick="deleteStudent(${student.id})"><i class="fas fa-trash"></i> Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      
+      updateStats();
+    }
+
+    // Update statistics
+    function updateStats() {
+      document.getElementById('totalStudents').textContent = students.length;
+      
+      const today = new Date().toLocaleDateString();
+      const todayCount = students.filter(s => s.date === today).length;
+      document.getElementById('todayCount').textContent = todayCount;
+    }
+
+    // Open modal
+    function openModal(isEdit = false) {
+      document.getElementById('studentModal').classList.add('active');
+      if (!isEdit) {
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Add Student';
+        document.getElementById('studentForm').reset();
+        document.getElementById('editId').value = '';
+      }
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('studentModal').classList.remove('active');
+    }
+
+    // Save student
+    document.getElementById('studentForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const editId = document.getElementById('editId').value;
+      const studentData = {
+        studentName: document.getElementById('studentName').value.trim(),
+        rollNumber: document.getElementById('rollNumber').value.trim(),
+        classSection: document.getElementById('classSection').value.trim(),
+        addedBy: localStorage.getItem('userName'),
+        date: new Date().toLocaleDateString()
+      };
+
+      if (editId) {
+        // Update existing student
+        const index = students.findIndex(s => s.id === parseInt(editId));
+        if (index !== -1) {
+          students[index] = { ...students[index], ...studentData };
+          showToast('Student updated successfully!');
+        }
+      } else {
+        // Add new student
+        studentData.id = Date.now();
+        students.push(studentData);
+        showToast('Student added successfully!');
+      }
+
+      localStorage.setItem('students', JSON.stringify(students));
+      renderStudents();
+      closeModal();
+    });
+
+    // Edit student
+    function editStudent(id) {
+      const student = students.find(s => s.id === id);
+      if (student) {
+        document.getElementById('editId').value = id;
+        document.getElementById('studentName').value = student.studentName;
+        document.getElementById('rollNumber').value = student.rollNumber;
+        document.getElementById('classSection').value = student.classSection;
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Student';
+        openModal(true);
+      }
+    }
+
+    // Delete student
+    function deleteStudent(id) {
+      if (confirm('Are you sure you want to delete this student?')) {
+        students = students.filter(s => s.id !== id);
+        localStorage.setItem('students', JSON.stringify(students));
+        renderStudents();
+        showToast('Student deleted successfully!', true);
+      }
+    }
+
+    // Search/filter students
+    function filterStudents() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = students.filter(s => 
+        s.studentName.toLowerCase().includes(searchTerm) ||
+        s.rollNumber.toLowerCase().includes(searchTerm) ||
+        s.classSection.toLowerCase().includes(searchTerm)
+      );
+      renderStudents(filtered);
+    }
+
+    // Export to Excel
+    function exportToExcel() {
+      if (students.length === 0) {
+        showToast('No data to export!', true);
+        return;
+      }
+
+      const exportData = students.map((s, index) => ({
+        'S.No': index + 1,
+        'Student Name': s.studentName,
+        'Roll Number': s.rollNumber,
+        'Class & Section': s.classSection,
+        'Added By': s.addedBy,
+        'Date': s.date
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Students');
+      
+      // Set column widths
+      ws['!cols'] = [
+        { wch: 6 },
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 12 }
+      ];
+
+      XLSX.writeFile(wb, `Lucafama_Students_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+      showToast('Excel file downloaded successfully!');
+    }
+
+    // Show toast notification
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show' + (isError ? ' error' : '');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Logout
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRole');
+      window.location.href = 'login.html';
+    }
+
+    // Initial render
+    renderStudents();
+  </script>
+</body>
+</html>
